@@ -8,13 +8,13 @@ body {
 
     box-sizing: border-box;
 
-    color: #333;
+    color: #000;
 
-    background-color: #f8f9fa;
+    background-color: #ffffff;
 
     overflow-x: hidden;
 
-}
+}  /* primary colors black text on white background */
 
 .sidebar {
 
@@ -397,6 +397,12 @@ td {
         flex: 1 1 100%;
 
     }
+
+    /* override mobile responsiveness: keep sidebar visible and avoid content hiding */
+    .sidebar { transform: none !important; }
+    main, header.header { margin-left: 200px !important; }
+    .hamburger, .overlay { display: none !important; }
+    .overlay.show { display: none !important; }
 
     th,
 

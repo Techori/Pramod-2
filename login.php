@@ -4,136 +4,79 @@ include './_conn.php';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shree Unnati Wires & Traders - Premium Wire Manufacturing</title>
-    <script src="https://unpkg.com/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | Shree Unnati Wires &amp; Traders</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#f48c25',
+              dark: '#d6761a',
+              light: '#ffaa54'
+            },
+            industrial: {
+              900: '#121212',
+              800: '#1e1e1e',
+              700: '#2d2d2d'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          borderRadius: {
+            'custom': '4px', // ROUND_FOUR implementation
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    /* Subtle industrial wire mesh pattern overlay */
+    .wire-mesh-bg {
+      background-image: radial-gradient(circle, #f48c25 0.5px, transparent 0.5px);
+      background-size: 30px 30px;
+      opacity: 0.05;
+    }
+    .accent-gradient {
+      background: linear-gradient(135deg, #f48c25 0%, #d6761a 100%);
+    }
+    .glass-effect {
+      background: rgba(30, 30, 30, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
     <style>
-        /* make select dropdown text black even when selected */
-        select.form-select,
+        /* ensure dropdown text remains black even in dark mode */
+        select.form-select {
+            color: #000 !important;
+            background-color: #fff !important;
+        }
         select.form-select option {
             color: #000 !important;
-        }
-
-        .btn-fancy {
-            background: linear-gradient(45deg, #6a11cb, #2575fc);
-            color: white;
-            border: none;
-            width: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .btn-fancy:hover {
-            background: linear-gradient(45deg, #2575fc, #6a11cb);
-            transform: scale(1.05);
-        }
-
-        .process-list li {
-            list-style: none;
-            padding-left: 1.5rem;
-            position: relative;
-            margin-bottom: 0.75rem;
-        }
-
-        .process-list li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: red;
-            font-weight: bold;
-        }
-
-        .login-box {
-            background-color: White;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .login-fields {
-            align-items: start;
-            margin-bottom: 1.5rem;
-        }
-
-        .dropdown-container {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .custom-dropdown {
-            position: relative;
-            width: 95%;
-            background: white;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            cursor: pointer;
-            padding: 12px;
-        }
-
-        .dropdown-selected {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .selected-text {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .custom-dropdown.open .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-arrow {
-            margin-left: 10px;
-            font-size: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .custom-dropdown.open .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-options {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 0 0 8px 8px;
-            z-index: 99;
-            display: none;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .dropdown-option {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .dropdown-option:hover {
-            background-color: #eee;
-        }
-
-        @media (max-width: 500px) {
-            .custom-dropdown {
-                font-size: 14px;
-                padding: 10px;
-            }
         }
     </style>
 </head>
 
-<body class="bg-secondary bg-opacity-10">
+<body class="font-sans antialiased min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden">
+<!-- background decorations -->
+<div class="fixed inset-0 wire-mesh-bg pointer-events-none"></div>
+<div class="fixed -top-24 -left-24 w-96 h-96 bg-brand/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed -bottom-24 -right-24 w-96 h-96 bg-brand/5 rounded-full blur-[120px] pointer-events-none"></div>
     <?php
     if (isset($_SESSION["uid"]) && isset($_SESSION["user_type"]) && isset($_SESSION["session_id"])) {
         header("location:./index.php");
@@ -272,7 +215,7 @@ include './_conn.php';
                     <form action="login.php" method="POST">
                         <div class="login-fields">
                             <label for="user_type">Login As</label>
-                            <select name="user_type" id="user_type" class="form-select mb-3" required>
+                            <select name="user_type" id="user_type" class="form-select mb-3 text-black bg-white" required>
                                 <option value="Admin" <?= (isset($_COOKIE['remember_type']) && $_COOKIE['remember_type'] == 'Admin') ? 'selected' : '' ?>>Admin</option>
                                 <option value="Store" <?= (isset($_COOKIE['remember_type']) && $_COOKIE['remember_type'] == 'Store') ? 'selected' : '' ?>>Store</option>
                                 <option value="Vendor" <?= (isset($_COOKIE['remember_type']) && $_COOKIE['remember_type'] == 'Vendor') ? 'selected' : '' ?>>Vendor</option>
