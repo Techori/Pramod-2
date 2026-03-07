@@ -13,6 +13,12 @@ include './_conn.php';
     <script src="https://unpkg.com/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* make select dropdown text black even when selected */
+        select.form-select,
+        select.form-select option {
+            color: #000 !important;
+        }
+
         .btn-fancy {
             background: linear-gradient(45deg, #6a11cb, #2575fc);
             color: white;
