@@ -362,42 +362,264 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['whatAction'])) {
     
     <title>Shree Unnati Wires & Traders - Premium Wire Manufacturing</title>
     <style>
-        .cards {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+        :root {
+            --primary-color: #0d6efd;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #0dcaf0;
+            --secondary-color: #6c757d;
+            --dark-color: #212529;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --border-radius: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: none;
+            position: relative;
+            overflow: hidden;
             height: 100%;
         }
 
-        .cards:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+            transition: var(--transition);
         }
 
-        .card-border {
-            border-radius: 0.5rem;
-            border-top: none;
-            border-right: none;
-            border-bottom: none;
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
         }
+
+        .metric-card:hover::before {
+            width: 6px;
+        }
+
+        .metric-card.sales::before { background: var(--success-color); }
+        .metric-card.inventory::before { background: var(--warning-color); }
+        .metric-card.bnpl::before { background: var(--info-color); }
+        .metric-card.suppliers::before { background: var(--secondary-color); }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .metric-card.sales .metric-icon { background: var(--success-color); }
+        .metric-card.inventory .metric-icon { background: var(--warning-color); }
+        .metric-card.bnpl .metric-icon { background: var(--info-color); }
+        .metric-card.suppliers .metric-icon { background: var(--secondary-color); }
+
+        .metric-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .metric-change.positive { color: var(--success-color); }
+        .metric-change.negative { color: var(--danger-color); }
 
         .chart-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
         }
 
         .chart-box {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 600px;
-            flex: 1 1 300px;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
         }
 
-        h3 {
+        .chart-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .chart-box h3 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quick-actions {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-top: 30px;
+        }
+
+        .quick-actions h4 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .dashboard-header {
+                padding: 20px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhanced modal styles */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+    </style>
             margin-bottom: 15px;
         }
 
@@ -545,153 +767,190 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['whatAction'])) {
     include './_admin_nav.php';
     ?>
 
-    <main>
-        <?php if ($page === 'admin_dashboard'): ?>
+<body class="bg-secondary bg-opacity-10">
+    <?php
+    include './_admin_nav.php';
+    ?>
 
-            <h1>Dashboard</h1>
-            <p>Welcome back to your business management dashboard</p>
+    <div class="dashboard-container fade-in">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard</h1>
+            <p>Monitor and manage your business operations with real-time insights</p>
+        </div>
+
+        <main>
+            <?php if ($page === 'admin_dashboard'): ?>
+
+                <?php
+
+                // Get current and last month info
+                function getMonthYear($offset = 0)
+                {
+                    $date = new DateTime();
+                    $date->modify("$offset month");
+                    return [$date->format('m'), $date->format('Y')];
+                }
+                list($currMonth, $currYear) = getMonthYear(0);
+                list($lastMonth, $lastYear) = getMonthYear(-1);
+
+                function percentageChange($current, $last)
+                {
+                    if ($last == 0)
+                        return 0;
+                    return round((($current - $last) / $last) * 100, 2);
+                }
+
+                // Get Total Sales
+                $salesQuery = $conn->prepare("
+                    SELECT 
+                        SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as current_sales,
+                        SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as last_sales
+                    FROM invoice
+                ");
+                $salesQuery->bind_param("iiii", $currMonth, $currYear, $lastMonth, $lastYear);
+                $salesQuery->execute();
+                $sales = $salesQuery->get_result()->fetch_assoc();
+                $salesAmount = $sales['current_sales'] ?: 0;
+                $salesLast = $sales['last_sales'] ?: 0;
+                $salesChange = percentageChange($salesAmount, $salesLast);
+                $salesTrend = $salesChange >= 0 ? 'success' : 'danger';
+
+                // Get Inventory Value
+                $invQuery = $conn->query("
+                    SELECT 
+                        SUM(mrp * stock_quantity) as total_value 
+                    FROM products
+                ");
+                $inv = $invQuery->fetch_assoc();
+                $invAmount = $inv['total_value'] ?: 0;
+
+                // If you want to compare with last month, you'll need to use created_at or updated_at
+                $invLastQuery = $conn->prepare("
+                    SELECT SUM(mrp * stock_quantity) as last_value 
+                    FROM products 
+                    WHERE MONTH(updated_at) = ? AND YEAR(updated_at) = ?
+                ");
+                $invLastQuery->bind_param("ii", $lastMonth, $lastYear);
+                $invLastQuery->execute();
+                $invLast = $invLastQuery->get_result()->fetch_assoc()['last_value'] ?: 0;
+
+                $invChange = percentageChange($invAmount, $invLast);
+                $invTrend = $invChange >= 0 ? 'success' : 'danger';
 
 
-            <?php
+                // Get BNPL Outstanding
+                $bnplQuery = $conn->prepare("
+                    SELECT 
+                        SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as current_bnpl,
+                        SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as last_bnpl
+                    FROM invoice WHERE payment_method = 'BNPL'
+                ");
+                $bnplQuery->bind_param("iiii", $currMonth, $currYear, $lastMonth, $lastYear);
+                $bnplQuery->execute();
+                $bnpl = $bnplQuery->get_result()->fetch_assoc();
+                $bnplAmount = $bnpl['current_bnpl'] ?: 0;
+                $bnplLast = $bnpl['last_bnpl'] ?: 0;
+                $bnplChange = percentageChange($bnplAmount, $bnplLast);
+                $bnplTrend = $bnplChange >= 0 ? 'success' : 'danger';
 
-            // Get current and last month info
-            function getMonthYear($offset = 0)
-            {
-                $date = new DateTime();
-                $date->modify("$offset month");
-                return [$date->format('m'), $date->format('Y')];
-            }
-            list($currMonth, $currYear) = getMonthYear(0);
-            list($lastMonth, $lastYear) = getMonthYear(-1);
+                // Get Active Suppliers
+                $suppliers = $conn->query("SELECT COUNT(*) as count FROM suppliers")->fetch_assoc();
+                $supplierCount = $suppliers['count'] ?: 0;
 
-            function percentageChange($current, $last)
-            {
-                if ($last == 0)
-                    return 0;
-                return round((($current - $last) / $last) * 100, 2);
-            }
+                ?>
 
-            // Get Total Sales
-            $salesQuery = $conn->prepare("
-                SELECT 
-                    SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as current_sales,
-                    SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as last_sales
-                FROM invoice
-            ");
-            $salesQuery->bind_param("iiii", $currMonth, $currYear, $lastMonth, $lastYear);
-            $salesQuery->execute();
-            $sales = $salesQuery->get_result()->fetch_assoc();
-            $salesAmount = $sales['current_sales'] ?: 0;
-            $salesLast = $sales['last_sales'] ?: 0;
-            $salesChange = percentageChange($salesAmount, $salesLast);
-            $salesTrend = $salesChange >= 0 ? 'success' : 'danger';
+                <!-- Enhanced Metrics Cards -->
+                <div class="row g-4 mb-5">
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="metric-card sales">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-title">Total Sales</div>
+                            <div class="metric-value">₹<?= number_format($salesAmount, 2) ?></div>
+                            <div class="metric-change <?= $salesChange >= 0 ? 'positive' : 'negative' ?>">
+                                <i class="fas fa-arrow-<?= $salesChange >= 0 ? 'up' : 'down' ?> me-1"></i>
+                                <?= abs($salesChange) ?>% vs last month
+                            </div>
+                        </div>
+                    </div>
 
-            // Get Inventory Value
-            $invQuery = $conn->query("
-                SELECT 
-                    SUM(mrp * stock_quantity) as total_value 
-                FROM products
-            ");
-            $inv = $invQuery->fetch_assoc();
-            $invAmount = $inv['total_value'] ?: 0;
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="metric-card inventory">
+                            <div class="metric-icon">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div class="metric-title">Inventory Value</div>
+                            <div class="metric-value">₹<?= number_format($invAmount, 2) ?></div>
+                            <div class="metric-change <?= $invChange >= 0 ? 'positive' : 'negative' ?>">
+                                <i class="fas fa-arrow-<?= $invChange >= 0 ? 'up' : 'down' ?> me-1"></i>
+                                <?= abs($invChange) ?>% vs last month
+                            </div>
+                        </div>
+                    </div>
 
-            // If you want to compare with last month, you'll need to use created_at or updated_at
-            $invLastQuery = $conn->prepare("
-                SELECT SUM(mrp * stock_quantity) as last_value 
-                FROM products 
-                WHERE MONTH(updated_at) = ? AND YEAR(updated_at) = ?
-            ");
-            $invLastQuery->bind_param("ii", $lastMonth, $lastYear);
-            $invLastQuery->execute();
-            $invLast = $invLastQuery->get_result()->fetch_assoc()['last_value'] ?: 0;
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="metric-card bnpl">
+                            <div class="metric-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="metric-title">BNPL Outstanding</div>
+                            <div class="metric-value">₹<?= number_format($bnplAmount, 2) ?></div>
+                            <div class="metric-change <?= $bnplChange >= 0 ? 'positive' : 'negative' ?>">
+                                <i class="fas fa-arrow-<?= $bnplChange >= 0 ? 'up' : 'down' ?> me-1"></i>
+                                <?= abs($bnplChange) ?>% vs last month
+                            </div>
+                        </div>
+                    </div>
 
-            $invChange = percentageChange($invAmount, $invLast);
-            $invTrend = $invChange >= 0 ? 'success' : 'danger';
-
-
-            // Get BNPL Outstanding
-            $bnplQuery = $conn->prepare("
-                SELECT 
-                    SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as current_bnpl,
-                    SUM(CASE WHEN MONTH(date) = ? AND YEAR(date) = ? THEN grand_total ELSE 0 END) as last_bnpl
-                FROM invoice WHERE payment_method = 'BNPL'
-            ");
-            $bnplQuery->bind_param("iiii", $currMonth, $currYear, $lastMonth, $lastYear);
-            $bnplQuery->execute();
-            $bnpl = $bnplQuery->get_result()->fetch_assoc();
-            $bnplAmount = $bnpl['current_bnpl'] ?: 0;
-            $bnplLast = $bnpl['last_bnpl'] ?: 0;
-            $bnplChange = percentageChange($bnplAmount, $bnplLast);
-            $bnplTrend = $bnplChange >= 0 ? 'success' : 'danger';
-
-            // Get Active Suppliers
-            $suppliers = $conn->query("SELECT COUNT(*) as count FROM suppliers")->fetch_assoc();
-            $supplierCount = $suppliers['count'] ?: 0;
-
-            ?>
-
-            <!-- HTML Dashboard Cards -->
-            <div class="row">
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm" style="border-left: 5px solid #0d6efd;">
-                        <div class="card-body">
-                            <h6 class="text-muted">Total Sales</h6>
-                            <h3 class="fw-bold">₹<?= number_format($salesAmount, 2) ?></h3>
-                            <p class="text-<?= $salesTrend ?>">
-                                <?= ($salesChange >= 0 ? '+' : '') . $salesChange ?>% vs last month
-                            </p>
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="metric-card suppliers">
+                            <div class="metric-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="metric-title">Active Suppliers</div>
+                            <div class="metric-value"><?= $supplierCount ?></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm" style="border-left: 5px solid #198754;">
-                        <div class="card-body">
-                            <h6 class="text-muted">Inventory Value</h6>
-                            <h3 class="fw-bold">₹<?= number_format($invAmount, 2) ?></h3>
-                            <p class="text-<?= $invTrend ?>">
-                                <?= ($invChange >= 0 ? '+' : '') . $invChange ?>% vs last month
-                            </p>
+
+                <!-- Enhanced Charts -->
+                <div class="chart-container">
+                    <div class="chart-box">
+                        <h3><i class="fas fa-chart-area me-2"></i>Monthly Revenue Trend</h3>
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h3><i class="fas fa-chart-pie me-2"></i>Sales by Payment Method</h3>
+                        <div style="position: relative; width: 100%; max-width: 300px; margin: 0 auto;">
+                            <canvas id="pieChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm" style="border-left: 5px solid #ffc107;">
-                        <div class="card-body">
-                            <h6 class="text-muted">BNPL Outstanding</h6>
-                            <h3 class="fw-bold">₹<?= number_format($bnplAmount, 2) ?></h3>
-                            <p class="text-<?= $bnplTrend ?>">
-                                <?= ($bnplChange >= 0 ? '+' : '') . $bnplChange ?>% vs last month
-                            </p>
-                        </div>
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                    <div class="action-buttons">
+                        <a href="?page=inventory" class="action-btn">
+                            <i class="fas fa-boxes"></i>
+                            Manage Inventory
+                        </a>
+                        <a href="?page=suppliers" class="action-btn">
+                            <i class="fas fa-truck"></i>
+                            Supplier Management
+                        </a>
+                        <a href="?page=reports" class="action-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            View Reports
+                        </a>
+                        <a href="?page=settings" class="action-btn">
+                            <i class="fas fa-cog"></i>
+                            System Settings
+                        </a>
                     </div>
                 </div>
-
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm h-100" style="border-left: 5px solid #6f42c1;">
-                        <div class="card-body">
-                            <h6 class="text-muted">Active Suppliers</h6>
-                            <h3 class="fw-bold"><?= $supplierCount ?></h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Charts -->
-            <div class="chart-container">
-                <div class="chart-box">
-                    <h3>Monthly Revenue Trend</h3>
-                    <canvas id="lineChart"></canvas>
-                </div>
-                <div class="chart-box">
-                    <h3>Sales by Payment Method</h3>
-                    <div style="position: relative; width: 100%; max-width: 300px; margin: 0 auto;">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
-            </div>
 
             <!-- Create Invoice form -->
             <div id="invoiceModal" class="modal">

@@ -34,12 +34,222 @@ $user_name = $_SESSION['user_name'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-color: #0d6efd;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #0dcaf0;
+            --secondary-color: #6c757d;
+            --dark-color: #212529;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --border-radius: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
         body {
-            font-family: sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            color: #333;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .metric-card:hover::before {
+            width: 6px;
+        }
+
+        .metric-card.production::before { background: var(--success-color); }
+        .metric-card.orders::before { background: var(--warning-color); }
+        .metric-card.inventory::before { background: var(--info-color); }
+        .metric-card.workers::before { background: var(--secondary-color); }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .metric-card.production .metric-icon { background: var(--success-color); }
+        .metric-card.orders .metric-icon { background: var(--warning-color); }
+        .metric-card.inventory .metric-icon { background: var(--info-color); }
+        .metric-card.workers .metric-icon { background: var(--secondary-color); }
+
+        .metric-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .quick-actions {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-top: 30px;
+        }
+
+        .quick-actions h4 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .dashboard-header {
+                padding: 20px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -48,137 +258,114 @@ $user_name = $_SESSION['user_name'];
     <?php
     include '_factory_nav.php';
     ?>
-    <main>
-        <?php if ($page === 'dashboard'): ?>
-            <h1>Dashboard</h1>
-            <p>Welcome back to your business management dashboard</p>
+<body class="bg-secondary bg-opacity-10">
+    <?php
+    include '_factory_nav.php';
+    ?>
 
-            <?php
-            $production = $conn->query("SELECT COUNT(*) as count FROM factory_production WHERE created_for='$user_name'")->fetch_assoc()['count'];
-            $pending = $conn->query("SELECT COUNT(*) as count FROM retail_store_stock_request WHERE status='Ordered'")->fetch_assoc()['count'];
+    <div class="dashboard-container fade-in">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-industry me-3"></i>Factory Dashboard</h1>
+            <p>Monitor production, manage inventory, and track factory operations</p>
+        </div>
 
-            // Get total stock value (current month)
-            $totalValueSql = "
-                SELECT SUM(fs.value) AS total_value
-                FROM factory_stock fs
-                INNER JOIN (
-                    SELECT item_name, MAX(stock_id) AS max_stock_id
-                    FROM factory_stock
-                    WHERE created_for = '$user_name'
-                    GROUP BY item_name
-                ) latest ON fs.item_name = latest.item_name AND fs.stock_id = latest.max_stock_id
-                WHERE fs.created_for = '$user_name'
-            ";
-            $totalValueResult = $conn->query($totalValueSql);
-            $totalValue = 0;
-            if ($totalValueResult->num_rows > 0) {
-                $row = $totalValueResult->fetch_assoc();
-                $totalValue = $row['total_value'] ?? 0;
-            }
+        <main>
+            <?php if ($page === 'dashboard'): ?>
 
-            $worker = $conn->query("SELECT COUNT(*) as count FROM factory_workers WHERE created_for = '$user_name'")->fetch_assoc()['count'];
-            ?>
+                <?php
+                $production = $conn->query("SELECT COUNT(*) as count FROM factory_production WHERE created_for='$user_name'")->fetch_assoc()['count'];
+                $pending = $conn->query("SELECT COUNT(*) as count FROM retail_store_stock_request WHERE status='Ordered'")->fetch_assoc()['count'];
 
-            <div class="row g-3 mb-4">
-                <!-- Metrics Row -->
-                <div class="row g-3">
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="card p-3 border-start border-3 border-primary">
-                            <h6>Today's Production</h6>
-                            <h3><?= $production ?></h3>
+                // Get total stock value (current month)
+                $totalValueSql = "
+                    SELECT SUM(fs.value) AS total_value
+                    FROM factory_stock fs
+                    INNER JOIN (
+                        SELECT item_name, MAX(stock_id) AS max_stock_id
+                        FROM factory_stock
+                        WHERE created_for = '$user_name'
+                        GROUP BY item_name
+                    ) latest ON fs.item_name = latest.item_name AND fs.stock_id = latest.max_stock_id
+                    WHERE fs.created_for = '$user_name'
+                ";
+                $totalValueResult = $conn->query($totalValueSql);
+                $totalValue = 0;
+                if ($totalValueResult->num_rows > 0) {
+                    $row = $totalValueResult->fetch_assoc();
+                    $totalValue = $row['total_value'] ?? 0;
+                }
+
+                $worker = $conn->query("SELECT COUNT(*) as count FROM factory_workers WHERE created_for = '$user_name'")->fetch_assoc()['count'];
+                ?>
+
+                <!-- Enhanced Metrics Cards -->
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card production">
+                            <div class="metric-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="metric-title">Today's Production</div>
+                            <div class="metric-value"><?= $production ?></div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="card p-3 border-start border-3 border-success">
-                            <h6>Pending Orders</h6>
-                            <h3><?= $pending ?></h3>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card orders">
+                            <div class="metric-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="metric-title">Pending Orders</div>
+                            <div class="metric-value"><?= $pending ?></div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="card p-3 border-start border-3 border-warning">
-                            <h6>Total Stock Value</h6>
-                            <h3>₹<?php echo number_format($totalValue, 2); ?></h3>
+
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card inventory">
+                            <div class="metric-icon">
+                                <i class="fas fa-warehouse"></i>
+                            </div>
+                            <div class="metric-title">Total Stock Value</div>
+                            <div class="metric-value">₹<?php echo number_format($totalValue, 2); ?></div>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="card p-3 border-start border-3 border-info">
-                            <h6>Total Workers</h6>
-                            <h3><?= $worker ?></h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row g-3 my-4" role="group" aria-label="Default button group">
-                <!-- Button -->
-                <button type="button" class="btn btn-outline-primary col-lg-3 col-sm-6" style="min-width: 120px;"
-                    data-bs-toggle="modal" data-bs-target="#scheduleModal">
-                    Production Scheduling
-                </button>
-
-                <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form action="production.php" method="POST">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="scheduleModalLabel">Add Expenses</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-
-                                <div class="modal-body">
-
-                                    <div class="mb-3">
-                                        <label for="productInput" class="form-label">Product</label>
-                                        <input type="text" class="form-control" id="productInput" name="productInput"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="quantityInput" class="form-label">Quantity</label>
-                                        <input type="number" class="form-control" id="quantityInput" name="quantityInput"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="unit" class="form-label">Per Unit</label>
-                                        <input type="text" class="form-control" id="unit" name="unit" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="startDateInput" class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" id="startDateInput" name="startDateInput"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="endDateInput" class="form-label">End Date</label>
-                                        <input type="date" class="form-control" id="endDateInput" name="endDateInput"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="statusInput" class="form-label">Status</label>
-                                        <select class="form-select" id="statusInput" name="statusInput" required>
-                                            <option selected disabled value="">Choose...</option>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Scheduled">Scheduled</option>
-                                            <option value="Completed">Completed</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary" name="whatAction"
-                                            value="addProduction">Save</button>
-                                    </div>
-                                </div>
-                            </form>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="metric-card workers">
+                            <div class="metric-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="metric-title">Total Workers</div>
+                            <div class="metric-value"><?= $worker ?></div>
                         </div>
                     </div>
                 </div>
-                <!-- Button -->
-                <button type="button" class="btn btn-outline-primary col-lg-3 col-sm-6" style="min-width: 120px;"
-                    data-bs-toggle="modal" data-bs-target="#addMaterialModal">
-                    Raw Materials
-                </button>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                    <div class="action-buttons">
+                        <button type="button" class="action-btn" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                            <i class="fas fa-calendar-plus"></i>
+                            Production Scheduling
+                        </button>
+
+                        <button type="button" class="action-btn" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+                            <i class="fas fa-box-open"></i>
+                            Raw Materials
+                        </button>
+
+                        <a href="inventory.php" class="action-btn">
+                            <i class="fas fa-boxes"></i>
+                            Manage Inventory
+                        </a>
+
+                        <a href="workers.php" class="action-btn">
+                            <i class="fas fa-user-friends"></i>
+                            Worker Management
+                        </a>
+                    </div>
+                </div>
 
                 <?php
                 // Get names for Add expense form dropdown

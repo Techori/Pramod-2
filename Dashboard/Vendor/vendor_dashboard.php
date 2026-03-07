@@ -62,17 +62,228 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['whatAction'])) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../../public/css/styles.css">
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/xlsx.full.min.js"></script>
-    <style> </style>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --success-color: #198754;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #0dcaf0;
+            --secondary-color: #6c757d;
+            --dark-color: #212529;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --border-radius: 0.5rem;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #6f42c1 0%, #8a2be2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .metric-card:hover::before {
+            width: 6px;
+        }
+
+        .metric-card.orders::before { background: var(--primary-color); }
+        .metric-card.deliveries::before { background: var(--success-color); }
+        .metric-card.payments::before { background: var(--warning-color); }
+        .metric-card.revenue::before { background: var(--info-color); }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .metric-card.orders .metric-icon { background: var(--primary-color); }
+        .metric-card.deliveries .metric-icon { background: var(--success-color); }
+        .metric-card.payments .metric-icon { background: var(--warning-color); }
+        .metric-card.revenue .metric-icon { background: var(--info-color); }
+
+        .metric-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .metric-change.positive { color: var(--success-color); }
+        .metric-change.negative { color: var(--danger-color); }
+
+        .quick-actions {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-top: 30px;
+        }
+
+        .quick-actions h4 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #6f42c1 0%, #8a2be2 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .dashboard-header {
+                padding: 20px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <?php include '_vendor_nav.php'; ?>
-    <!-- Main Content -->
-    <main>
-        <?php if ($page === 'dashboard'): ?>
-            <div class="container-fluid">
-                <h1>Dashboard</h1>
-                <p>Welcome back to your vendor management dashboard</p>
+<body>
+    <?php include '_vendor_nav.php'; ?>
+
+    <div class="dashboard-container fade-in">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-truck me-3"></i>Vendor Dashboard</h1>
+            <p>Manage orders, deliveries, and supplier relationships efficiently</p>
+        </div>
+
+        <!-- Main Content -->
+        <main>
+            <?php if ($page === 'dashboard'): ?>
 
                 <?php
                 // Pending Orders
@@ -108,16 +319,71 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['whatAction'])) {
 
                 ?>
 
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <div class="card stat-card cards card-border shadow-sm h-100"
-                            style="border-left: 5px solid #0d6efd;">
-                            <div class="card-body">
-                                <h6 class="text-muted">Active Orders</h6>
-                                <h3 class="fw-bold"><?php echo $pendingOrders; ?> orders</h3>
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card orders">
+                            <div class="metric-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="metric-title">Active Orders</div>
+                            <div class="metric-value"><?php echo $pendingOrders; ?> orders</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card deliveries">
+                            <div class="metric-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="metric-title">Pending Deliveries</div>
+                            <div class="metric-value"><?php echo $pendingDeliveries; ?> deliveries</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card payments">
+                            <div class="metric-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="metric-title">Pending Payments</div>
+                            <div class="metric-value">₹<?php echo number_format($pendingPayments); ?></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="metric-card revenue">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-title">This Month Revenue</div>
+                            <div class="metric-value">₹<?php echo number_format($totalRevenue); ?></div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                <?php echo round($revenueGrowth, 1); ?>% vs last month
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                    <div class="action-buttons">
+                        <a href="orders.php" class="action-btn">
+                            <i class="fas fa-list"></i>
+                            Manage Orders
+                        </a>
+                        <a href="deliveries.php" class="action-btn">
+                            <i class="fas fa-shipping-fast"></i>
+                            Track Deliveries
+                        </a>
+                        <a href="payments.php" class="action-btn">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Payment Management
+                        </a>
+                        <a href="reports.php" class="action-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            View Reports
+                        </a>
+                    </div>
+                </div>
                     <div class="col-md-3 col-sm-6 mb-4">
                         <div class="card stat-card cards card-border shadow-sm h-100"
                             style="border-left: 5px solid #198754;">

@@ -91,13 +91,18 @@ require_once 'database.php';
 <body>
     <?php include '_retail_nav.php'; ?>
 
-    <!-- Main Content -->
-    <main>
-        <?php if ($page === 'dashboard'): ?>
-            <div class="main-content">
-                <h1>Retail Store Dashboard</h1>
-                <p>Manage store operations, sales, and inventory</p>
+<body>
+    <?php include '_retail_nav.php'; ?>
 
+    <div class="dashboard-container fade-in">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-store me-3"></i>Retail Store Dashboard</h1>
+            <p>Manage store operations, sales, and inventory with real-time insights</p>
+        </div>
+
+        <!-- Main Content -->
+        <main>
+            <?php if ($page === 'dashboard'): ?>
 
                 <?php
 
@@ -138,38 +143,66 @@ require_once 'database.php';
                 $avgChange = ($avgLast > 0) ? round((($avgCurrent - $avgLast) / $avgLast) * 100, 1) : 0;
                 ?>
 
-                <!-- Cards Row 1 -->
-                <div class="row">
-                    <div class="col-md-4 col-sm-6 mb-4">
-                        <div class="card stat-card cards card-border shadow-sm" style="border-left: 5px solid #198754;">
-                            <div class="card-body">
-                                <h6 class="text-muted">Store Visitors</h6>
-                                <h3 class="fw-bold"><?php echo $visitorsCurrent; ?></h3>
-                                <p class="<?php echo ($visitorsChange >= 0) ? 'text-success' : 'text-danger'; ?>">
-                                    <?php echo ($visitorsChange >= 0 ? '+' : '') . $visitorsChange; ?>% vs last month
-                                </p>
+                <!-- Enhanced Cards Row 1 -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card visitors">
+                            <div class="metric-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="metric-title">Store Visitors</div>
+                            <div class="metric-value"><?php echo $visitorsCurrent; ?></div>
+                            <div class="metric-change <?php echo ($visitorsChange >= 0) ? 'positive' : 'negative'; ?>">
+                                <i class="fas fa-arrow-<?php echo ($visitorsChange >= 0) ? 'up' : 'down'; ?> me-1"></i>
+                                <?php echo abs($visitorsChange); ?>% vs last month
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-6 mb-4">
-                        <div class="card stat-card cards card-border shadow-sm" style="border-left: 5px solid #ffc107;">
-                            <div class="card-body">
-                                <h6 class="text-muted">Pending Orders</h6>
-                                <h3 class="fw-bold"><?php echo $pending_orders; ?></h3>
-                                <p>Live unpaid orders</p>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card orders">
+                            <div class="metric-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="metric-title">Pending Orders</div>
+                            <div class="metric-value"><?php echo $pending_orders; ?></div>
+                            <div class="text-muted small">Live unpaid orders</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="metric-card basket">
+                            <div class="metric-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="metric-title">Average Basket</div>
+                            <div class="metric-value">₹<?php echo number_format($avgCurrent); ?></div>
+                            <div class="metric-change <?php echo ($avgChange >= 0) ? 'positive' : 'negative'; ?>">
+                                <i class="fas fa-arrow-<?php echo ($avgChange >= 0) ? 'up' : 'down'; ?> me-1"></i>
+                                <?php echo abs($avgChange); ?>% vs last month
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-6 mb-4">
-                        <div class="card stat-card cards card-border shadow-sm" style="border-left: 5px solid #6f42c1;">
-                            <div class="card-body">
-                                <h6 class="text-muted">Average Basket</h6>
-                                <h3 class="fw-bold">₹<?php echo number_format($avgCurrent); ?></h3>
-                                <p class="<?php echo ($avgChange >= 0) ? 'text-success' : 'text-danger'; ?>">
-                                    <?php echo ($avgChange >= 0 ? '+' : '') . $avgChange; ?>% vs last month
-                                </p>
-                            </div>
-                        </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                    <div class="action-buttons">
+                        <a href="billing.php" class="action-btn">
+                            <i class="fas fa-cash-register"></i>
+                            New Sale
+                        </a>
+                        <a href="inventory.php" class="action-btn">
+                            <i class="fas fa-boxes"></i>
+                            Manage Inventory
+                        </a>
+                        <a href="customers.php" class="action-btn">
+                            <i class="fas fa-user-friends"></i>
+                            Customer Management
+                        </a>
+                        <a href="reports.php" class="action-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            View Reports
+                        </a>
                     </div>
                 </div>
 
@@ -846,6 +879,192 @@ require_once 'database.php';
         ob_start();
         ?>
         <style>
+            :root {
+                --primary-color: #0d6efd;
+                --success-color: #198754;
+                --warning-color: #ffc107;
+                --danger-color: #dc3545;
+                --info-color: #0dcaf0;
+                --secondary-color: #6c757d;
+                --dark-color: #212529;
+                --light-bg: #f8f9fa;
+                --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+                --card-shadow-hover: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                --border-radius: 0.5rem;
+                --transition: all 0.3s ease;
+            }
+
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            }
+
+            .dashboard-container {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-radius: var(--border-radius);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                margin: 20px;
+                padding: 30px;
+                min-height: calc(100vh - 40px);
+            }
+
+            .dashboard-header {
+                background: linear-gradient(135deg, #fd7e14 0%, #ff6b35 100%);
+                color: white;
+                padding: 30px;
+                border-radius: var(--border-radius);
+                margin-bottom: 30px;
+                box-shadow: var(--card-shadow);
+            }
+
+            .dashboard-header h1 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 10px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .dashboard-header p {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin: 0;
+            }
+
+            .metric-card {
+                background: white;
+                border-radius: var(--border-radius);
+                padding: 25px;
+                box-shadow: var(--card-shadow);
+                transition: var(--transition);
+                border: none;
+                position: relative;
+                overflow: hidden;
+                height: 100%;
+            }
+
+            .metric-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: var(--primary-color);
+                transition: var(--transition);
+            }
+
+            .metric-card:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--card-shadow-hover);
+            }
+
+            .metric-card:hover::before {
+                width: 6px;
+            }
+
+            .metric-card.visitors::before { background: var(--success-color); }
+            .metric-card.orders::before { background: var(--warning-color); }
+            .metric-card.basket::before { background: var(--info-color); }
+            .metric-card.sales::before { background: var(--danger-color); }
+
+            .metric-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+                color: white;
+            }
+
+            .metric-card.visitors .metric-icon { background: var(--success-color); }
+            .metric-card.orders .metric-icon { background: var(--warning-color); }
+            .metric-card.basket .metric-icon { background: var(--info-color); }
+            .metric-card.sales .metric-icon { background: var(--danger-color); }
+
+            .metric-title {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: var(--secondary-color);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 10px;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--dark-color);
+                margin-bottom: 8px;
+            }
+
+            .metric-change {
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+            .metric-change.positive { color: var(--success-color); }
+            .metric-change.negative { color: var(--danger-color); }
+
+            .quick-actions {
+                background: white;
+                padding: 30px;
+                border-radius: var(--border-radius);
+                box-shadow: var(--card-shadow);
+                margin-top: 30px;
+            }
+
+            .quick-actions h4 {
+                color: var(--dark-color);
+                font-weight: 600;
+                margin-bottom: 20px;
+            }
+
+            .action-buttons {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .action-btn {
+                background: linear-gradient(135deg, #fd7e14 0%, #ff6b35 100%);
+                color: white;
+                border: none;
+                padding: 15px 20px;
+                border-radius: var(--border-radius);
+                font-weight: 600;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                transition: var(--transition);
+                text-align: center;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);
+                color: white;
+            }
+
+            .action-btn i {
+                font-size: 1.2rem;
+            }
+
+            .fade-in {
+                animation: fadeIn 0.6s ease-in;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
             .watermark {
                 position: absolute;
                 top: 40%;
@@ -855,6 +1074,24 @@ require_once 'database.php';
                 color: red;
                 opacity: 0.1;
                 z-index: 0;
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-container {
+                    margin: 10px;
+                    padding: 20px;
+                }
+
+                .dashboard-header {
+                    padding: 20px;
+                }
+
+                .dashboard-header h1 {
+                    font-size: 2rem;
+                }
+
+                .action-buttons {
+                    grid-template-columns: 1fr;
             }
         </style>
         <div class="position-relative">
